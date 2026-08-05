@@ -551,4 +551,9 @@ function startLocalizationLoop(pool, broadcastSSE) {
   console.log(`   🔍 Localization loop: running every ${interval / 1000}s`);
 }
 
-module.exports = { startLocalizationLoop, runLocalization };
+module.exports = {
+  startLocalizationLoop,
+  runLocalization,
+  // Exported for unit testing
+  _internal: { buildTree, findFaultBoundaries, detectDeadSensors, isPoleDark },
+};

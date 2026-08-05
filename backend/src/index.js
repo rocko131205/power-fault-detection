@@ -83,6 +83,21 @@ async function start() {
     // Start background services
     startHeartbeatMonitor(pool, broadcastSSE);
     startLocalizationLoop(pool, broadcastSSE);
+
+    // Simulated telemetry: refresh heartbeats for all healthy devices every 5 minutes.
+    // In production, real smart poles send pings. In this demo, we simulate it so
+    // the heartbeat monitor doesn't flag the entire grid as overdue.
+    setInterval(async () => {
+      try {
+        await pool.query(`
+          UPDATE device_state SET last_seen_at = NOW()
+          WHERE status = 'online' AND energized = true
+        `);
+      } catch (err) {
+        console.error('Simulated heartbeat error:', err.message);
+      }
+    }, 5 * 60 * 1000); // every 5 minutes
+
     console.log('✅ Background services started');
 
     app.listen(config.port, '0.0.0.0', () => {
